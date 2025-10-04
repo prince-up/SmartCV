@@ -1,4 +1,15 @@
-function App() {
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
+function LandingPage() {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navbar */}
@@ -12,7 +23,7 @@ function App() {
               <a href="#home" className="text-gray-700 hover:text-indigo-600 transition duration-300">Home</a>
               <a href="#features" className="text-gray-700 hover:text-indigo-600 transition duration-300">Features</a>
               <a href="#about" className="text-gray-700 hover:text-indigo-600 transition duration-300">About</a>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Get Started</button>
+              <button onClick={handleGetStarted} className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">Get Started</button>
             </div>
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
@@ -39,7 +50,7 @@ function App() {
             An AI-powered resume enhancer that analyzes your CV, provides improvement suggestions,
             and helps you track real-life skill growth to continuously enhance your resume.
           </p>
-          <button className="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+          <button onClick={handleGetStarted} className="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
             Start Building Your CV
           </button>
         </div>
@@ -113,6 +124,80 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function Dashboard() {
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-indigo-600">SmartCV Dashboard</h1>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                window.location.href = "/";
+              }}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-gray-900">Welcome to your Dashboard</h2>
+        <p className="mt-4 text-gray-600">Here you can manage your CV, track skills, etc.</p>
+        {/* Add dashboard content here */}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/login"
+          element={
+            isLoggedIn ? (
+              <Dashboard />
+            ) : (
+              <Login
+                onLoginSuccess={handleLoginSuccess}
+                switchToSignup={() => window.location.href = "/signup"}
+              />
+            )
+          }
+        />
+        <Route
+          path="/signup"
+          element={<Signup switchToLogin={() => window.location.href = "/login"} />}
+        />
+        <Route
+          path="/dashboard"
+          element={isLoggedIn ? <Dashboard /> : <LandingPage />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
