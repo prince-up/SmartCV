@@ -1,7 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import DashboardLayout from './components/DashboardLayout';
+import Overview from './pages/Dashboard/Overview';
+import ResumeAnalysis from './pages/Dashboard/ResumeAnalysis';
+import ResumeBuilder from './pages/Dashboard/ResumeBuilder';
+import SkillTracker from './pages/Dashboard/SkillTracker';
+import JobMatch from './pages/Dashboard/JobMatch';
+import Portfolio from './pages/Dashboard/Portfolio';
+import UserProfile from './pages/Dashboard/UserProfile';
+import HeroAnimation from './components/HeroAnimation';
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -127,74 +136,116 @@ function LandingPage() {
   );
 }
 
-function Dashboard() {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">SmartCV Dashboard</h1>
-            </div>
-            <button
-              onClick={() => {
-                localStorage.removeItem("token");
-                window.location.href = "/";
-              }}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-gray-900">Welcome to your Dashboard</h2>
-        <p className="mt-4 text-gray-600">Here you can manage your CV, track skills, etc.</p>
-        {/* Add dashboard content here */}
-      </div>
-    </div>
-  );
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  return token ? children : null;
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
   const handleLoginSuccess = () => {
-    setIsLoggedIn(true);
+    // Handle login success
   };
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* Hero Animation - Entry Point */}
+        <Route path="/" element={<HeroAnimation />} />
+        
+        {/* Landing Page - Home */}
+        <Route path="/home" element={<LandingPage />} />
+        
+        {/* Login Page */}
         <Route
           path="/login"
+          element={<Login onLoginSuccess={handleLoginSuccess} />}
+        />
+        
+        {/* Signup Page */}
+        <Route
+          path="/signup"
+          element={<Signup onSignupSuccess={handleLoginSuccess} />}
+        />
+        
+        {/* Protected Dashboard Routes */}
+        <Route
+          path="/dashboard"
           element={
-            isLoggedIn ? (
-              <Dashboard />
-            ) : (
-              <Login
-                onLoginSuccess={handleLoginSuccess}
-                switchToSignup={() => window.location.href = "/signup"}
-              />
-            )
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Overview />
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
         <Route
-          path="/signup"
-          element={<Signup switchToLogin={() => window.location.href = "/login"} />}
+          path="/dashboard/resume-analysis"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ResumeAnalysis />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
         />
         <Route
-          path="/dashboard"
-          element={isLoggedIn ? <Dashboard /> : <LandingPage />}
+          path="/dashboard/resume-builder"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ResumeBuilder />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/skill-tracker"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <SkillTracker />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/job-match"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <JobMatch />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/portfolio"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Portfolio />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/profile"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <UserProfile />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </Router>
