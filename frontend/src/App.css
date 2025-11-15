@@ -1,0 +1,55 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.App-header p {
+  font-size: 1.2rem;
+  margin: 10px 0 0 0;
+}
+
+.App-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+}
+
+.intro {
+  margin-bottom: 40px;
+}
+
+.intro h2 {
+  color: #282c34;
+}
+
+.features h2 {
+  color: #282c34;
+}
+
+.features ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.features li {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+}
+
+.features strong {
+  color: #007bff;
+}
